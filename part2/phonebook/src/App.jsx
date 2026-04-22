@@ -405,6 +405,7 @@ export default App
 
 //  Exercise 2.11
 
+/*
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Filter from './components/Filter'
@@ -479,6 +480,269 @@ const App = () => {
 }
 
 export default App
+*/
+
+// Exercise 2.12 
+
+/*
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
+
+const App = () => {
+  const [persons, setPersons] = useState([]) 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [showNames, setShowNames] = useState('')
+  const [searchName, setSearchName] = useState('')
+
+  const hook = () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }
+  
+  useEffect(hook, [])
+  console.log('render', persons.length, 'persons')
+
+  const addName = (event) => {
+    event.preventDefault()
+    console.log('button clicked', event.target)
+    const nameObject = {
+      name: newName,
+      number: newNumber,
+      id: String(persons.length + 1),
+    }
+    console.log('persons:', persons)
+    const foundInPhoneBook = persons.find(person => person.name === newName)
+    if (foundInPhoneBook) {
+      alert(`${newName} is already added to phonebook`)
+    }
+    if (!foundInPhoneBook) {
+      axios
+      .post('http://localhost:3001/persons', nameObject)
+      .then(response => {
+        console.log('response', response)
+        setPersons(persons.concat(response.data))
+      })
+    }
+    setNewName('')
+    setNewNumber('')
+    setShowNames(true)
+  }
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+  
+  const handleSearchName = (event) => {
+    setSearchName(event.target.value)
+    setShowNames(false)
+  }
+
+  const namesToShow = showNames ? persons : persons.filter(person => person.name.toLowerCase().startsWith(searchName.toLowerCase()))
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter searchName={searchName} handleSearchName={handleSearchName} />
+      <h3>Add a new name</h3>
+      <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+      <h3>Numbers</h3>
+      <Persons namesToShow={namesToShow} />
+    </div>
+  )
+}
+
+export default App
+*/
+
+// Exercise 2.13
+
+/*
+import { useState, useEffect } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
+import personServices from './services/persons'
+
+const App = () => {
+  const [persons, setPersons] = useState([]) 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [showNames, setShowNames] = useState('')
+  const [searchName, setSearchName] = useState('')
+
+  const hook = () => {
+    console.log('effect')
+    personServices
+      .getAll()
+      .then(initialPersons => {
+        console.log('promise fulfilled')
+        setPersons(initialPersons)
+      })
+  }
+  
+  useEffect(hook, [])
+  console.log('render', persons.length, 'persons')
+
+  const addName = (event) => {
+    event.preventDefault()
+    console.log('button clicked', event.target)
+    const nameObject = {
+      name: newName,
+      number: newNumber,
+      id: String(persons.length + 1),
+    }
+    console.log('persons:', persons)
+    const foundInPhoneBook = persons.find(person => person.name === newName)
+    if (foundInPhoneBook) {
+      alert(`${newName} is already added to phonebook`)
+    }
+    if (!foundInPhoneBook) {
+      personServices
+        .create(nameObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+        })
+    }
+    setNewName('')
+    setNewNumber('')
+    setShowNames(true)
+  }
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+  
+  const handleSearchName = (event) => {
+    setSearchName(event.target.value)
+    setShowNames(false)
+  }
+
+  const namesToShow = showNames ? persons : persons.filter(person => person.name.toLowerCase().includes(searchName.toLowerCase()))
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter searchName={searchName} handleSearchName={handleSearchName} />
+      <h3>Add a new name</h3>
+      <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+      <h3>Numbers</h3>
+      <Persons namesToShow={namesToShow} />
+    </div>
+  )
+}
+
+export default App
+*/
+
+// Exrecise 2.14
+
+import { useState, useEffect } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
+import personServices from './services/persons'
+
+const App = () => {
+  const [persons, setPersons] = useState([]) 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [showNames, setShowNames] = useState('')
+  const [searchName, setSearchName] = useState('')
+
+  const hook = () => {
+    console.log('effect')
+    personServices
+      .getAll()
+      .then(initialPersons => {
+        console.log('promise fulfilled')
+        setPersons(initialPersons)
+      })
+  }
+  
+  useEffect(hook, [])
+  console.log('render', persons.length, 'persons')
+
+  const addName = (event) => {
+    event.preventDefault()
+    console.log('button clicked', event.target)
+    const nameObject = {
+      name: newName,
+      number: newNumber,
+      id: String(persons.length + 1),
+    }
+    console.log('persons:', persons)
+    const foundInPhoneBook = persons.find(person => person.name === newName)
+    if (foundInPhoneBook) {
+      alert(`${newName} is already added to phonebook`)
+    }
+    if (!foundInPhoneBook) {
+      personServices
+        .create(nameObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+        })
+    }
+    setNewName('')
+    setNewNumber('')
+    setShowNames(true)
+  }
+
+  const deleteAPerson = (id) => {
+    const person = persons.find(n => n.id === id)
+    console.log('delete person with id:', id)
+    personServices
+      .deletePerson(id)
+      .then(returnedPerson => {
+        console.log('response', returnedPerson)
+        setPersons(persons.filter(n => n.id !== id))
+        setShowNames(true)
+      })
+  }
 
 
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+  
+  const handleSearchName = (event) => {
+    setSearchName(event.target.value)
+    setShowNames(false)
+  }
+
+  const namesToShow = showNames ? persons : persons.filter(person => person.name.toLowerCase().includes(searchName.toLowerCase()))
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter searchName={searchName} handleSearchName={handleSearchName} />
+      <h3>Add a new name</h3>
+      <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+      <h3>Numbers</h3>
+      <Persons namesToShow={namesToShow} deleteAPerson={deleteAPerson}/>
+    </div>
+  )
+}
+
+export default App
 

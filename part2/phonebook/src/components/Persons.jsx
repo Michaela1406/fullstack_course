@@ -1,10 +1,10 @@
 import PhoneBookPerson from './PhoneBookPerson'
 
-const Persons = (props) => {
+const Persons = ({namesToShow, deleteAPerson}) => {
   return (
     <ul>
-       {props.namesToShow.map(person =>
-          <PhoneBookPerson key={person.name} name={person.name} number={person.number} />
+       {namesToShow.map(person =>
+          <PhoneBookPerson key={person.name} name={person.name} number={person.number} deleteThisPerson={() => deleteAPerson(person.id)} />
         )}
     </ul>
   )
