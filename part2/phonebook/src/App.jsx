@@ -655,6 +655,7 @@ export default App
 
 import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personServices from './services/persons'
@@ -665,6 +666,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showNames, setShowNames] = useState('')
   const [searchName, setSearchName] = useState('')
+  const [message, setMessage] = useState(null)
 
   const hook = () => {
     console.log('effect')
@@ -690,13 +692,43 @@ const App = () => {
     console.log('persons:', persons)
     const foundInPhoneBook = persons.find(person => person.name === newName)
     if (foundInPhoneBook) {
-      alert(`${newName} is already added to phonebook`)
+      // Exercise 2.15
+      let userChoice = confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (userChoice) {
+        personServices
+          .updateNumber(foundInPhoneBook.id, nameObject)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== foundInPhoneBook.id ? person : returnedPerson))
+            // Exercise 2.16
+            setMessage(`Changed number for ${nameObject.name}`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+            //
+          })
+          .catch(error => {
+            // Exercise 2.17
+            console.log('error', error)
+            setMessage(`Information of '${newName}' has already been removed from server`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+            //
+          })
+      }
+      //
     }
     if (!foundInPhoneBook) {
       personServices
         .create(nameObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          // Exercise 2.16
+          setMessage(`Added ${nameObject.name}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          //
         })
     }
     setNewName('')
@@ -707,13 +739,18 @@ const App = () => {
   const deleteAPerson = (id) => {
     const person = persons.find(n => n.id === id)
     console.log('delete person with id:', id)
-    personServices
-      .deletePerson(id)
-      .then(returnedPerson => {
-        console.log('response', returnedPerson)
-        setPersons(persons.filter(n => n.id !== id))
-        setShowNames(true)
-      })
+    let userChoice = confirm(`Delete ${person.name}?`)
+    if (userChoice){
+      personServices
+        .deletePerson(person)
+        .then(returnedPerson => {
+          console.log('response', returnedPerson)
+          if (returnedPerson !== undefined) {
+            setPersons(persons.filter(n => n.id !== id))
+            setShowNames(true)
+          }
+        })
+    }
   }
 
 
@@ -735,6 +772,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter searchName={searchName} handleSearchName={handleSearchName} />
       <h3>Add a new name</h3>
       <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
