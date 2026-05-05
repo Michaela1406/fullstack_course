@@ -101,7 +101,7 @@ app.delete('/api/persons/:id', (request, response) => {
     persons = persons.concat(person)
   
     response.json(person)
-    morgan.token('body', (request, response) => JSON.stringify(request.body))
+    morgan.token('body', function(request, response) { return JSON.stringify(request.body)})
   })
 
 const PORT = 3001
