@@ -5,6 +5,11 @@ const morgan = require('morgan')
 
 app.use(express.json())
 // Exercise 3.8 Phonebook backend step 8
+
+morgan.token("body", (req) => {
+  return req.body ? JSON.stringify(req.body) : "-";
+});
+
 app.use(morgan(':method :url :status - :response-time ms :body'))
 
 // Exercise 3.9 Phonebook backend step 9
@@ -101,7 +106,7 @@ app.delete('/api/persons/:id', (request, response) => {
     persons = persons.concat(person)
   
     response.json(person)
-    morgan.token('body', function(request, response) { return JSON.stringify(request.body)})
+
   })
 
 const PORT = 3001
