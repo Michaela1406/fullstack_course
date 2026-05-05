@@ -14,8 +14,8 @@ morgan.token("body", (req) => {
 app.use(morgan(':method :url :status - :response-time ms :body'))
 
 // Exercise 3.9 Phonebook backend step 9
-const cors = require('cors')
-app.use(cors())
+//const cors = require('cors')
+//app.use(cors())
 
 // Exercise 3.11 Phonebook backend step 11
 app.use(express.static('dist'))
