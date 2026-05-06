@@ -1,9 +1,13 @@
+require('dotenv').config()
 const express = require('express')
+// Exercise 2.13 Phonebook database step 1
+const Person = require('./models/person')
 const app = express()
+
+let persons = []
 // Exercise 3.7 Phonebook backend step 7
 const morgan = require('morgan')
 
-app.use(express.json())
 
 // Exercise 3.8 Phonebook backend step 8
 
@@ -18,10 +22,11 @@ app.use(morgan(':method :url :status - :response-time ms :body'))
 //app.use(cors())
 
 // Exercise 3.11 Phonebook backend step 11
+app.use(express.json())
 app.use(express.static('dist'))
 
 
-let persons = [
+/*let persons = [
     { 
         id: "1",
         name: "Arto Hellas", 
@@ -42,21 +47,37 @@ let persons = [
         name: "Mary Poppendieck", 
         number: "39-23-6423122"
       }
-]
+]*/
+
 
 // Exercise 3.1 Phonebook backend step 1
-app.get('/api/persons', (request, response) => {
+/*app.get('/api/persons', (request, response) => {
   response.json(persons)
+})
+*/
+
+// Exercise 2.13 Phonebook database step 1
+app.get('/api/persons', (request, response) => {
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
+})
+
+
+app.get('/api/persons/:id', (request, response) => {
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
 })
 
 // Exercise 3.2 Phonebook backend step 2
-app.get('/info', (request, response) => {
+/*app.get('/info', (request, response) => {
   const date = new Date()
   response.send(
     `<p>Phonebook has info for ${persons.length} people</p>
      <p>${date}</p>`
   )
-})
+})*/
 
 // Exercise 3.3 Phonebook backend step 3
 app.get('/api/persons/:id', (request, response) => {
@@ -80,11 +101,13 @@ app.delete('/api/persons/:id', (request, response) => {
 
   // Exercise 3.5 Phonebook backend step 5
 
-  const generateId = () => {
+  /*const generateId = () => {
     const id = Math.floor(Math.random() * 1000000)
     return String(id)
   }
+  */
   
+  // Exercise 2.14 Phonebook database step 2
   app.post('/api/persons', (request, response) => {
     const body = request.body
 
@@ -101,19 +124,17 @@ app.delete('/api/persons/:id', (request, response) => {
       })
     }
   
-    const person = {
-      id: generateId(),
+    const person = new Person ({
       name: body.name,
       number: body.number,
-    }
+    })
   
-    persons = persons.concat(person)
-  
-    response.json(person)
-
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
