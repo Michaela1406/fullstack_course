@@ -730,6 +730,16 @@ const App = () => {
           }, 5000)
           //
         })
+        // Exercise 3.19 Phonebook database step 7
+        .catch(error => {
+          console.log('error', error.response.data)
+          console.log('error', error.response.data.error)
+          setMessage(`Error: ${error.response.data.error}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+         //
     }
     setNewName('')
     setNewNumber('')

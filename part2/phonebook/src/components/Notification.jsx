@@ -9,7 +9,7 @@ const Notification = ({ message }) => {
         </div>
         )
     }
-    if (message.includes('already been removed')){
+    if (message.includes('already been removed') || message.includes('Error')) {
         return (
         <div className="deletionUnsuccess">
             {message}
