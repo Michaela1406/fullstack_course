@@ -11,9 +11,9 @@ const morgan = require('morgan')
 
 // Exercise 3.8 Phonebook backend step 8
 
-morgan.token("body", (req) => {
-  return req.body ? JSON.stringify(req.body) : "-";
-});
+morgan.token('body', (req) => {
+  return req.body ? JSON.stringify(req.body) : '-'
+})
 
 
 // Exercise 3.9 Phonebook backend step 9
@@ -27,24 +27,24 @@ app.use(morgan(':method :url :status - :response-time ms :body'))
 
 
 /*let persons = [
-    { 
+    {
         id: "1",
-        name: "Arto Hellas", 
+        name: "Arto Hellas",
         number: "040-123456"
       },
-      { 
+      {
         id: "2",
-        name: "Ada Lovelace", 
+        name: "Ada Lovelace",
         number: "39-44-5323523"
       },
-      { 
+      {
         id: "3",
-        name: "Dan Abramov", 
+        name: "Dan Abramov",
         number: "12-43-234345"
       },
-      { 
+      {
         id: "4",
-        name: "Mary Poppendieck", 
+        name: "Mary Poppendieck",
         number: "39-23-6423122"
       }
 ]*/
@@ -66,27 +66,23 @@ app.get('/api/persons', (request, response) => {
 // Exercise 3.18 Phonebook database step 6
 
 app.get('/api/persons/:id', (request, response, next) => {
-  Person.findById(request.params.id)
-  .then(person => {
+  Person.findById(request.params.id).then(person => {
     if (person) {
       response.json(person)
     } else {
       response.status(404).end()
     }
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 app.get('/info', (request, response, next) => {
-  Person.countDocuments({})
-  .then(count => {
+  Person.countDocuments({}).then(count => {
     const date = new Date()
     response.send(
       `<p>Phonebook has info for ${count} people</p>
        <p>${date}</p>`
     )
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 
@@ -95,7 +91,7 @@ app.get('/info', (request, response, next) => {
   const date = new Date()
   response.send(
     `<p>Phonebook has info for ${persons.length} people</p>
-     <p>${date}</p>`
+    <p>${date}</p>`
   )
 })
   */
@@ -117,7 +113,6 @@ app.get('/info', (request, response, next) => {
 /*app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
     person = persons.filter(person => person.id !== id)
-  
     response.status(204).end()
   })
 */
@@ -125,12 +120,10 @@ app.get('/info', (request, response, next) => {
 // Exercise 3.15 Phonebook database step 3
 
 app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndDelete(request.params.id)
-  .then(result => {
-    console.log("Deleted a person:", result.name, result.number, "with id", result.id)
+  Person.findByIdAndDelete(request.params.id).then(result => {
+    console.log('Deleted a person:', result.name, result.number, 'with id', result.id)
     response.status(204).end()
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 
@@ -148,14 +141,14 @@ app.post('/api/persons', (request, response, next) => {
 
   // Exercise 3.6 Phonebook backend step 6
   if (!body.name || !body.number) {
-    return response.status(400).json({ 
-      error: 'name or number is missing' 
+    return response.status(400).json({
+      error: 'name or number is missing'
     })
   }
 
   if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({ 
-      error: 'name must be unique' 
+    return response.status(400).json({
+      error: 'name must be unique'
     })
   }
 
@@ -166,8 +159,7 @@ app.post('/api/persons', (request, response, next) => {
 
   person
     .save()
-    .then(savedPerson => {
-    response.json(savedPerson)
+    .then(savedPerson => {response.json(savedPerson)
     })
     .catch(error => next(error))
 })
@@ -191,7 +183,7 @@ app.put('/api/persons/:id', (request, response, next) => {
       })
     })
     .catch(error => next(error))
-  })
+})
 
 // Exercise 3.16 Phonebook database step 4
 const errorHandler = (error, request, response, next) => {
