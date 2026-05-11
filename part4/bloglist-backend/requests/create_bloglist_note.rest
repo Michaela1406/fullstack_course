@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs/
 content-type: application/json
 
 {
-    "title": "Adventures of Elvis Tax",
+    "title": "New Adventures of Elvis Tax",
     "author": "Elvis Tax",
     "url": "https://www.elvistax.com",
-    "likes": 42
+    "likes": 45
 }
