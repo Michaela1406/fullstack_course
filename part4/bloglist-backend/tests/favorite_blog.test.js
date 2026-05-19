@@ -1,15 +1,15 @@
-// Exercise 4.4: Helper functions and Unit Tests, step 2
+// Exercise 4.5: Helper functions and Unit Tests, step 3
 
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 
-describe('total likes', () => {
+describe('favorite blog', () => {
 
   test('of empty list is zero', () => {
     const empty_blogs = []
 
-    const result = listHelper.totalLikes(empty_blogs)
+    const result = listHelper.favoriteBlog(empty_blogs)
     assert.strictEqual(result, 0)
   })
 
@@ -25,11 +25,11 @@ describe('total likes', () => {
       }
     ]
 
-    const result = listHelper.totalLikes(listWithOneBlog)
-    assert.strictEqual(result, 5)
+    const result = listHelper.favoriteBlog(listWithOneBlog)
+    assert.strictEqual(result, listWithOneBlog[0])
   })
 
-  test('when a list has many blogs, equals the sum of likes of all blogs', () => {
+  test('when a list has many blogs, equals the blog with most likes', () => {
     const blogs = [
       {
         _id: '5a422a851b54a676234d17f7',
@@ -80,7 +80,8 @@ describe('total likes', () => {
         __v: 0
       }
     ]
-    const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, 36)
+    const result = listHelper.favoriteBlog(blogs)
+    assert.deepStrictEqual(result, blogs[2])
   })
+
 })
