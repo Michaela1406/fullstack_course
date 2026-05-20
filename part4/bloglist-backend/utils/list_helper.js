@@ -1,7 +1,7 @@
 // Exercise 4.3: Helper functions and Unit Tests, step 1
 
 const dummy = (blogs) => {
-  console.log(blogs)
+  console.log("dummy print", blogs)
   return 1
 }
 

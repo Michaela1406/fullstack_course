@@ -68,7 +68,6 @@ test('note without content is not added', async () => {
     .expect(400)
 
   const notesAtEnd = await helper.notesInDb()
-
   assert.strictEqual(notesAtEnd.length, helper.initialNotes.length)
 })
 

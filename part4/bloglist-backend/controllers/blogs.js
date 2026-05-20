@@ -11,9 +11,9 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
-  const blog = await new Blog ({
+  const blog = new Blog({
     title: body.title,
-    author: body.author,
+    author: body.author || 'Unknown Author',
     url: body.url,
     likes: body.likes || 0,
   })
