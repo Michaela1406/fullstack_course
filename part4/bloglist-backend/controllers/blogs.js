@@ -22,4 +22,28 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
+// Exercise 4.13: Blog List Expansions, step 1
+blogsRouter.delete('/:id', async (request, response) => {
+  await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).end()
+})
+
+// Exercise 4.14: Blog List Expansions, step 2
+blogsRouter.put('/:id', async (request, response) => {
+  const { title, author, url, likes } = request.body
+
+  const blotToUpdate = await Blog.findById(request.params.id)
+  if (!blotToUpdate) {
+    return response.status(404).end()
+  }
+
+  blotToUpdate.title = title
+  blotToUpdate.author = author
+  blotToUpdate.url = url
+  blotToUpdate.likes = likes
+
+  const updatedBlog = await blotToUpdate.save()
+  response.json(updatedBlog)
+})
+
 module.exports = blogsRouter
