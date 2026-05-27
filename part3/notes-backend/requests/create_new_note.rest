@@ -1,8 +1,8 @@
 POST http://localhost:3001/api/notes
 Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkVsdmlzIiwiaWQiOiI2YTE0NTBlNTAyZTVlZjI5ZWNlNzBmNWUiLCJpYXQiOjE3Nzk4NzU1Njh9.f_tdy-cCizWlz0OCyAybcbAalspq4SsMH9h1dY_u0gU
 
 {
-    "content": "mlem mlem",
-    "important": true,
-    "userId": "6a1450e502e5ef29ece70f5e"
+    "content": "Pufffffffff",
+    "important": true
 }
