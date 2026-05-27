@@ -9,7 +9,6 @@ const helper = require('./test_helper')
 
 const api = supertest(app)
 
-
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
@@ -20,13 +19,13 @@ describe('when there is initially one user in db', () => {
     await user.save()
   })
 
-  test('creation succeeds with a fresh username', async () => {
+  test('creation succeeds with a valid username', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
-      username: 'mluukkai',
-      name: 'Matti Luukkainen',
-      password: 'salainen',
+      username: 'ElvisTax',
+      name: 'Elvis Tax',
+      password: 'hemligt',
     }
 
     await api
@@ -40,6 +39,26 @@ describe('when there is initially one user in db', () => {
 
     const usernames = usersAtEnd.map(u => u.username)
     assert(usernames.includes(newUser.username))
+  })
+
+  test('creation fails with proper statuscode and message if password is invalid', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'ElvisTax',
+      name: 'Elvis Tax',
+      password: 'he',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    assert.strictEqual(result.body.error, 'password is required and must be at least 3 characters long')
   })
 
   test('creation fails with proper statuscode and message if username already taken', async () => {
@@ -58,12 +77,30 @@ describe('when there is initially one user in db', () => {
       .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.usersInDb()
-    assert(result.body.error.includes('expected `username` to be unique'))
-
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    assert.strictEqual(result.body.error, 'expected `username` to be unique')
   })
+
+  test('creation fails with proper statuscode and message if username is not defined', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    assert.strictEqual(result.body.error,('User validation failed: username: Path `username` is required.'))
+  })
+
 })
 
-after(async () => {
-  await mongoose.connection.close()
+after(() => {
+  mongoose.connection.close()
 })
