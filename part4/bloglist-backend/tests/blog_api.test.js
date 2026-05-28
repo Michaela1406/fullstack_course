@@ -1,18 +1,55 @@
 // Exercise 4.8: Blog List Tests, step 1
-const assert = require('node:assert')
 const { test, after, beforeEach, describe } = require('node:test')
+const assert = require('node:assert')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
-const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const app = require('../app')
 
 const api = supertest(app)
 
 describe('when there is initially some blogs saved', () => {
+  let authToken
   beforeEach(async () => {
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('secret', 10)
+    const testUser = new User({
+      username: 'testUser',
+      name: 'Mister Test',
+      passwordHash
+    })
+    await testUser.save()
+    //const users = await helper.usersInDb()
+    //console.log('users', users)
+
+    const loginTestUser = await api
+      .post('/api/login')
+      .send({ username: 'testUser', password: 'secret' })
+      .expect(200)
+    authToken = loginTestUser.body.token
+    //console.log('authToken:', authToken)
+
     await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+    const startBlog = {
+      title: 'Test Blog',
+      author: 'Mister Test',
+      url: 'http://example.com/test-blog',
+      likes: 5,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(startBlog)
+      .set('Authorization', `Bearer ${authToken}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    //const blogsAtStart = await helper.blogsInDb()
+    //console.log('blogsAtStart:', blogsAtStart)
+
   })
 
   test('blogs are returned as json', async () => {
@@ -25,7 +62,7 @@ describe('when there is initially some blogs saved', () => {
   test('all blogs are returned', async () => {
     const blogs  = await helper.blogsInDb()
 
-    assert.strictEqual(blogs.length, helper.initialBlogs.length)
+    assert.strictEqual(blogs.length, 1)
   })
 
   // Exercise 4.9: Blog List Tests, step 2
@@ -52,11 +89,12 @@ describe('when there is initially some blogs saved', () => {
       await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
       const blogsAtEnd = await helper.blogsInDb()
-      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 
       const titles = blogsAtEnd.map(b => b.title)
       assert(titles.includes('New blog'))
@@ -74,6 +112,7 @@ describe('when there is initially some blogs saved', () => {
       await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
@@ -94,6 +133,7 @@ describe('when there is initially some blogs saved', () => {
       await api
         .post('/api/blogs')
         .send(newBlogNoTitle)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(400)
 
       const newBlogNoUrl = {
@@ -104,6 +144,7 @@ describe('when there is initially some blogs saved', () => {
       await api
         .post('/api/blogs')
         .send(newBlogNoUrl)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(400)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -119,13 +160,14 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
       const ids = blogsAtEnd.map(b => b.id)
 
       assert(!ids.includes(blogToDelete.id))
-      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+      assert.strictEqual(blogsAtEnd.length, 0)
     })
   })
 
@@ -177,11 +219,10 @@ describe('when there is initially some blogs saved', () => {
       const ids = blogsAtEnd.map(b => b.id)
 
       assert(!ids.includes(validNonexistingId))
-      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+      assert.strictEqual(blogsAtEnd.length, 1)
     })
   })
 })
-
 
 after(async () => {
   await mongoose.connection.close()

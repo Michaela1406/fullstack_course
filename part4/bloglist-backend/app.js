@@ -24,7 +24,7 @@ mongoose
 app.use(express.static('dist'))
 app.use(express.json())
 app.use(middleware.tokenExtractor)
-app.use(middleware.requestLogger)
+//app.use(middleware.requestLogger)
 //app.use(middleware.tokenExtractor) // before the routes, so that the token is extracted and available in the request object for the routes to use
 
 app.use('/api/login', loginRouter)

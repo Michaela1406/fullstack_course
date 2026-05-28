@@ -9,6 +9,8 @@ const helper = require('./test_helper')
 
 const api = supertest(app)
 
+// Don't run all tests in the test folder at once, but only the tests in one file at one time to avoid problems with parallel use of beforeEach and the database
+
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
