@@ -1,4 +1,6 @@
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -28,8 +30,31 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+// Exercise 4.20 Blog List Expansion, step 8
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')){
+    //console.log('Extracted token:', request.token) // Debugging log
+    request.token = authorization.replace('Bearer ', '')
+  }
+
+  next()
+}
+
+// Exercise 4.22 Blog List Expansion, step 10
+const userExtractor = async (request, response, next) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (decodedToken.id) {
+    const user = await User.findById(decodedToken.id)
+    request.user = user
+  }
+  next()
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor,
+  userExtractor
 }
