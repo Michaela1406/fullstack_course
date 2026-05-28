@@ -150,6 +150,25 @@ describe('when there is initially some blogs saved', () => {
       const blogsAtEnd = await helper.blogsInDb()
       assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
     })
+
+    test('a blog cannot be added if token is missing', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const newBlog = {
+        title: 'Adventures of Elvis Tax',
+        author: 'Elvis Tax',
+        url: 'https://www.elvistax.com',
+        likes: 0
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
+    })
   })
 
   // Exercise 4.14: Blog List Expansions, step 1
@@ -168,6 +187,19 @@ describe('when there is initially some blogs saved', () => {
 
       assert(!ids.includes(blogToDelete.id))
       assert.strictEqual(blogsAtEnd.length, 0)
+    })
+
+    test('deleting does not succeed if id is invalid', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+
+      await api
+        .delete('/api/blogs/nonexistingid')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(400)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
     })
   })
 
