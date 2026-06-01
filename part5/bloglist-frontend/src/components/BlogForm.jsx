@@ -1,4 +1,5 @@
 // Exercise 5.3 Blog List Frontend, step 3
+// Exercise 5.6 Blog List Frontend, step 6
 import { useState } from 'react';
 
 const BlogForm = ({ createBlog }) => {

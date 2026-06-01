@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -62,6 +63,7 @@ const App = () => {
 
   // Exercise 5.3 Blog List Frontend, step 3
   const addBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     try {
       const response = await blogService.create(blogObject)
       setBlogs(blogs.concat(response.data))
@@ -106,17 +108,19 @@ const App = () => {
 
   const blogList = () => (
     <div>
-      <h2>Blogs</h2>
-      <p>{user.username} logged in</p>
-      <div>
-        <button onClick={handleLogout}>
-          logout
-        </button>
-      </div>
-      {blogs.map(blog =>
+     {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
     </div>
+  )
+
+  // Exercise 5.5 Blog List Frontend, step 5
+  const blogFormRef = useRef()
+
+  const blogForm = () => (
+    <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+      <BlogForm createBlog={addBlog}/>
+    </Togglable>
   )
 
   if (user === null) {
@@ -131,7 +135,14 @@ const App = () => {
   return (
     <div>
     <Notification message={message}/>
-    <BlogForm createBlog={addBlog}/>
+    <h2>Blogs</h2>
+    <div>
+      <p>{user.username} logged in</p>
+      <button onClick={handleLogout}>
+        logout
+      </button>
+    </div>
+    {blogForm()}
     {blogList()}
     </div>
   )
