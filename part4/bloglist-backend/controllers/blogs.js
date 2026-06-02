@@ -76,17 +76,17 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body
 
-  const blotToUpdate = await Blog.findById(request.params.id)
-  if (!blotToUpdate) {
+  const blogToUpdate = await Blog.findById(request.params.id)
+  if (!blogToUpdate) {
     return response.status(404).end()
   }
 
-  blotToUpdate.title = title
-  blotToUpdate.author = author
-  blotToUpdate.url = url
-  blotToUpdate.likes = likes
+  blogToUpdate.title = title
+  blogToUpdate.author = author
+  blogToUpdate.url = url
+  blogToUpdate.likes = likes
 
-  const updatedBlog = await blotToUpdate.save()
+  const updatedBlog = await blogToUpdate.save()
   response.json(updatedBlog)
 })
 

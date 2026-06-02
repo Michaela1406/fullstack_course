@@ -22,4 +22,18 @@ const create = async newObject => {
   return response
 }
 
-export default { getAll, setToken, create }
+// Exercise 5.8 Blog List Frontend, step 8
+const update = async (id, updatedObject) => {
+  const response = await axios.put(`${baseUrl}/${id}`, updatedObject)
+  return response.data
+}
+
+const remove = async id => {
+  const config = {
+    headers: { Authorization: token }
+  }
+  const response = await axios.delete(`${baseUrl}/${id}`, config)
+  return response
+}
+
+export default { getAll, setToken, create, update, remove }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
@@ -44,21 +45,18 @@ const App = () => {
       setUsername('')
       setPassword('')
       setMessage(`Logged in ${user.username}`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
     } catch {
       setMessage(`Wrong username or password`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
     }
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   // Exercise 5.2 Blog List Frontend, step 2
   const handleLogout = () => {
-    setUser(null)
     window.localStorage.removeItem('loggedNoteappUser')
+    setUser(null)
   }
 
   // Exercise 5.3 Blog List Frontend, step 3
@@ -68,48 +66,63 @@ const App = () => {
       const response = await blogService.create(blogObject)
       setBlogs(blogs.concat(response.data))
       setMessage(`Added ${response.data.title} by ${response.data.author}`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
     } catch {
       console.log('error creating a new blog')
       setMessage('Error creating a new blog')
+    }
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
+  }
+
+  // Exercise 5.8 Blog List Frontend, step 8
+  const addLike = async (blogObject) => {
+    try {
+      const updatedBlog = await blogService.update(blogObject.id, {
+        ...blogObject,
+      })
+      setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : updatedBlog))
+    } catch {
+      console.log('error updating the blog')
+      setMessage('Error updating the blog')
       setTimeout(() => {
         setMessage(null)
       }, 5000)
     }
   }
 
+  // Exercise 5.11 Blog List Frontend, step 11
+  const removeBlog = async (blogObject) => {
+    const blogToDelete = blogs.find(blog => blog.id === blogObject.id)
+    try {
+      await blogService.remove(blogToDelete.id)
+      setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id))
+      setMessage(`Deleted ${blogToDelete.title} by ${blogToDelete.author}`)
+    } catch {
+      console.log('error deleting the blog')
+      setMessage('Error deleting the blog')
+    }
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
+  }
+
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label>
-          username
-          <input
-            type="text"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <input
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">login</button>
-    </form>
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
+      />
+    </Togglable>
   )
 
   const blogList = () => (
     <div>
-     {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+     {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
+        <Blog key={blog.id} blog={blog} updatedBlog={addLike} deletedBlog={removeBlog} />
       )}
     </div>
   )
@@ -127,7 +140,6 @@ const App = () => {
       return (
         <div>
           <Notification message={message}/>
-          <h2>Log in to application</h2>
           {loginForm()}
         </div>
       )
@@ -137,10 +149,9 @@ const App = () => {
     <Notification message={message}/>
     <h2>Blogs</h2>
     <div>
-      <p>{user.username} logged in</p>
-      <button onClick={handleLogout}>
+      <p>{user.username} logged in <button onClick={handleLogout}>
         logout
-      </button>
+      </button></p>
     </div>
     {blogForm()}
     {blogList()}
