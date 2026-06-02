@@ -9,15 +9,15 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   // Exercise 5.2 Blog List Frontend, step 2
@@ -35,18 +35,18 @@ const App = () => {
     event.preventDefault()
     console.log('logging in with', username, password)
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       // Exercise 5.2 Blog List Frontend, step 2
       window.localStorage.setItem(
         'loggedNoteappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
       setMessage(`Logged in ${user.username}`)
     } catch {
-      setMessage(`Wrong username or password`)
+      setMessage('Wrong username or password')
     }
     setTimeout(() => {
       setMessage(null)
@@ -121,7 +121,7 @@ const App = () => {
 
   const blogList = () => (
     <div>
-     {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
+      {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
         <Blog key={blog.id} blog={blog} updatedBlog={addLike} deletedBlog={removeBlog} />
       )}
     </div>
@@ -137,24 +137,24 @@ const App = () => {
   )
 
   if (user === null) {
-      return (
-        <div>
-          <Notification message={message}/>
-          {loginForm()}
-        </div>
-      )
+    return (
+      <div>
+        <Notification message={message}/>
+        {loginForm()}
+      </div>
+    )
   }
   return (
     <div>
-    <Notification message={message}/>
-    <h2>Blogs</h2>
-    <div>
-      <p>{user.username} logged in <button onClick={handleLogout}>
-        logout
-      </button></p>
-    </div>
-    {blogForm()}
-    {blogList()}
+      <Notification message={message}/>
+      <h2>Blogs</h2>
+      <div>
+        <p>{user.username} logged in <button onClick={handleLogout}>
+          logout
+        </button></p>
+      </div>
+      {blogForm()}
+      {blogList()}
     </div>
   )
 }
