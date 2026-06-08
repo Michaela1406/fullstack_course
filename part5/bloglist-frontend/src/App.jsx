@@ -119,10 +119,10 @@ const App = () => {
     </Togglable>
   )
 
-  const blogList = () => (
+  const blogList = (user) => (
     <div>
       {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
-        <Blog key={blog.id} blog={blog} updatedBlog={addLike} deletedBlog={removeBlog} />
+        <Blog key={blog.id} blog={blog} updateLikes={addLike} deletedBlog={removeBlog} user={user}/>
       )}
     </div>
   )
@@ -154,7 +154,7 @@ const App = () => {
         </button></p>
       </div>
       {blogForm()}
-      {blogList()}
+      {blogList(user)}
     </div>
   )
 }

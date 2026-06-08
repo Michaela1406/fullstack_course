@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, updatedBlog, deletedBlog }) => {
+const Blog = ({ blog, updateLikes, deletedBlog, user }) => {
   // Exercise 7.7 Blog List Frontend, step 7
   const [visible, setVisible] = useState(false)
 
@@ -19,7 +19,7 @@ const Blog = ({ blog, updatedBlog, deletedBlog }) => {
   // Exercise 5.8 Blog List Frontend, step 8
   const addLike = (event) => {
     event.preventDefault()
-    updatedBlog ({
+    updateLikes ({
       ...blog,
       likes: blog.likes + 1
     })
@@ -36,20 +36,20 @@ const Blog = ({ blog, updatedBlog, deletedBlog }) => {
   return (
     <div style={blogStyle}>
       {visible ? (
-        <div>
+        <div className='blogAllDetails'>
           {blog.title}
           <button onClick={toggleVisibility}>hide</button>
           <p>url: {blog.url}</p>
           <p>likes: {blog.likes}<button onClick ={addLike}>like</button></p>
           <p>author: {blog.author}</p>
-          {blog.user && blog.user.username === JSON.parse(window.localStorage.getItem('loggedNoteappUser')).username && (
+          {blog.user && blog.user.username === user.username && (
             <button onClick={deleteBlog}>remove</button>
           )}
         </div>
       ) : (
-        <div>
+        <div className ="blog">
           {blog.title} - author: {blog.author}
-          <button onClick={toggleVisibility}>view</button>
+          <button className='view' onClick={toggleVisibility}>view</button>
         </div>
       )}
     </div>
