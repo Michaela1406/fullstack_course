@@ -28,6 +28,11 @@ app.use('/api/login', loginRouter)
 app.use('/api/notes', notesRouter)
 app.use('/api/users', usersRouter)
 
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 app.use(middleware.unknownEndpoint)
 // middleware.unknownEndpoint has to be the second to last loaded middleware, also all the routes should be registered before this!
 app.use(middleware.errorHandler)
