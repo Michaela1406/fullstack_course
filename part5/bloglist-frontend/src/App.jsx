@@ -13,6 +13,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
+  const blogFormRef = useRef() // Exercise 5.5 Blog List Frontend, step 5
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -44,7 +45,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setMessage(`Logged in ${user.username}`)
+      setMessage(`${user.username} logged in`)
     } catch {
       setMessage('Wrong username or password')
     }
@@ -108,15 +109,13 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <Togglable buttonLabel='login'>
-      <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={handleLogin}
-      />
-    </Togglable>
+    <LoginForm
+      username={username}
+      password={password}
+      handleUsernameChange={({ target }) => setUsername(target.value)}
+      handlePasswordChange={({ target }) => setPassword(target.value)}
+      handleSubmit={handleLogin}
+    />
   )
 
   const blogList = (user) => (
@@ -128,7 +127,6 @@ const App = () => {
   )
 
   // Exercise 5.5 Blog List Frontend, step 5
-  const blogFormRef = useRef()
 
   const blogForm = () => (
     <Togglable buttonLabel='create new blog' ref={blogFormRef}>
@@ -140,6 +138,7 @@ const App = () => {
     return (
       <div>
         <Notification message={message}/>
+        <h1>Bloglist</h1>
         {loginForm()}
       </div>
     )
