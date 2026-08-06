@@ -1,7 +1,7 @@
 // Exercise 5.5 Blog List Frontend, step 5
-import { useState, useImperativeHandle } from 'react'
+import { useState, useImperativeHandle} from 'react'
 
-const Togglable = (props) => {
+const Togglable = props => {
   const [visible, setVisible] = useState(false)
 
   console.log('Togglable, visible: ', visible)

@@ -109,13 +109,15 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <LoginForm
-      username={username}
-      password={password}
-      handleUsernameChange={({ target }) => setUsername(target.value)}
-      handlePasswordChange={({ target }) => setPassword(target.value)}
-      handleSubmit={handleLogin}
-    />
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
+      />
+    </Togglable>
   )
 
   const blogList = (user) => (
@@ -139,6 +141,7 @@ const App = () => {
       <div>
         <Notification message={message}/>
         <h1>Bloglist</h1>
+        <h2>Log in to application</h2>
         {loginForm()}
       </div>
     )
@@ -152,7 +155,11 @@ const App = () => {
           logout
         </button></p>
       </div>
-      {blogForm()}
+      <div>
+        <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+          <BlogForm createBlog={addBlog}/>
+        </Togglable>
+      </div>
       {blogList(user)}
     </div>
   )

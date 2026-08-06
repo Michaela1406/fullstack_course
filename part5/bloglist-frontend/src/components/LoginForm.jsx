@@ -6,8 +6,6 @@ const LoginForm = ({
   handleSubmit
 }) => {
   return (
-    <div>
-      <h2>Log in to application</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>
@@ -30,8 +28,7 @@ const LoginForm = ({
           </label>
         </div>
         <button type="submit">login</button>
-      </form>
-    </div>)
+      </form>)
 }
 
 export default LoginForm
