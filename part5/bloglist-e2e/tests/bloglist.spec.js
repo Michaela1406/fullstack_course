@@ -4,22 +4,22 @@ const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
         name: 'Elvis',
         username: 'ElvisTax',
         password: 'hemligt'
       }
     })
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/users', {
       data: {
         name: 'Oona',
         username: 'OonaTax',
         password: 'hemligt'
       }
     })
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('Login form is shown', async ({ page }) => {
@@ -87,5 +87,58 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'view' }).click()
         await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
     })
+
+    // Exercise 5.23 Blog List End To End Testing, step 7
+    test('blogs are ordered according to likes with the blog with the most likes being first', async ({ page, request }) => {
+        await createBlog(page, 'Elvis testing playwright', 'Elvis', 'www.elvistax.com')
+        await createBlog(page, 'Oona testing playwright', 'Oona', 'www.oonatax.com')
+        await createBlog(page, 'Lando testing playwright', 'Lando', 'www.landovovve.com')
+
+        await page.getByText('Elvis testing playwright - author: Elvis').waitFor()
+        await page.getByText('Oona testing playwright - author: Oona').waitFor()
+        await page.getByText('Lando testing playwright - author: Lando').waitFor()
+
+        const elvisBlog = await page.getByText('Elvis testing playwright - author: Elvis').locator('..')
+        const oonaBlog = await page.getByText('Oona testing playwright - author: Oona').locator('..')
+        const landoBlog = await page.getByText('Lando testing playwright - author: Lando').locator('..')
+
+        await elvisBlog.getByRole('button', { name: 'view' }).click() 
+        const elvisOpenBlog = await page.getByText('Elvis testing')   
+        await elvisOpenBlog.getByRole('button', { name: 'like' }).click()
+        await elvisOpenBlog.getByText('Likes: 1').waitFor()
+        expect(elvisOpenBlog.getByText('Likes: 1')).toBeVisible()
+        await elvisOpenBlog.getByRole('button', { name: 'hide' }).click()
+
+        await landoBlog.getByRole('button', { name: 'view' }).click()
+        const landoOpenBlog = await page.getByText('Lando testing')
+        await landoOpenBlog.getByRole('button', { name: 'like' }).click()
+        await landoOpenBlog.getByText('Likes: 1').waitFor()
+        await landoOpenBlog.getByRole('button', { name: 'like' }).click()
+        await landoOpenBlog.getByText('Likes: 2').waitFor()
+        expect(landoOpenBlog.getByText('Likes: 2')).toBeVisible()
+        await landoOpenBlog.getByRole('button', { name: 'hide' }).click()
+
+        await oonaBlog.getByRole('button', { name: 'view' }).click()
+        const oonaOpenBlog = await page.getByText('Oona testing')
+        await oonaOpenBlog.getByRole('button', { name: 'like' }).click()
+        await oonaOpenBlog.getByText('Likes: 1').waitFor()
+        await oonaOpenBlog.getByRole('button', { name: 'like' }).click()
+        await oonaOpenBlog.getByText('Likes: 2').waitFor()
+        await oonaOpenBlog.getByRole('button', { name: 'like' }).click()
+        await oonaOpenBlog.getByText('Likes: 3').waitFor()
+        expect(oonaOpenBlog.getByText('Likes: 3')).toBeVisible()
+        await oonaOpenBlog.getByRole('button', { name: 'hide' }).click()
+        await page.getByText('Oona testing playwright - author: Oona').waitFor()
+
+        const blogs = await page.locator('.blog')
+        const firstBlog = await blogs.nth(0)
+        const secondBlog = await blogs.nth(1)
+        const thirdBlog = await blogs.nth(2)
+
+        await expect(firstBlog).toContainText('Oona testing playwright - author: Oona')
+        await expect(secondBlog).toContainText('Lando testing playwright - author: Lando')
+        await expect(thirdBlog).toContainText('Elvis testing playwright - author: Elvis')
+
+    })    
   })
 })

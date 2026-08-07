@@ -121,8 +121,7 @@ const App = () => {
   )
 
   const blogList = (user) => (
-    console.log('user in blogList: ', user),
-    <div>
+    <div className='blogList'>
       {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
         <Blog key={blog.id} blog={blog} updateLikes={addLike} deletedBlog={removeBlog} user={user}/>
       )}
