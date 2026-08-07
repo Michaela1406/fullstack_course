@@ -46,7 +46,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
     author: body.author || 'Unknown Author',
     url: body.url,
     likes: body.likes || 0,
-    user: user._id // Exercise 4.17 Blog List Expansions, step 5
+    user: user // Exercise 4.17 Blog List Expansions, step 5
   })
 
   const savedBlog = await blog.save()
