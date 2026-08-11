@@ -1,5 +1,5 @@
 // Exercise 5.24 Router blogs, step1
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useNavigate } from 'react'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -17,6 +17,7 @@ const BlogList = ({blogs}) => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
   const blogFormRef = useRef() // Exercise 5.5 Blog List Frontend, step 5
+  const navigate = useNavigate() // Exercise 5.24 Router blogs, step1
 
   // Exercise 5.2 Blog List Frontend, step 2
   useEffect(() => {
@@ -43,6 +44,7 @@ const BlogList = ({blogs}) => {
       setUsername('')
       setPassword('')
       setMessage(`${user.username} logged in`)
+      navigate('/') // Exercise 5.24 Router blogs, step1
     } catch {
       setMessage('Wrong username or password')
     }
