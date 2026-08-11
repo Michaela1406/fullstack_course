@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
+
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
-import LoginForm from './components/LoginForm'
+import Login from './components/Login'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -13,6 +19,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
+  
   const blogFormRef = useRef() // Exercise 5.5 Blog List Frontend, step 5
 
   useEffect(() => {
@@ -20,39 +27,6 @@ const App = () => {
       setBlogs( blogs )
     )
   }, [])
-
-  // Exercise 5.2 Blog List Frontend, step 2
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
-
-  // Exercise 5.1 Blog List Frontend, step 1
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    console.log('logging in with', username, password)
-    try {
-      const user = await loginService.login({ username, password })
-      // Exercise 5.2 Blog List Frontend, step 2
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      setMessage(`${user.username} logged in`)
-    } catch {
-      setMessage('Wrong username or password')
-    }
-    setTimeout(() => {
-      setMessage(null)
-    }, 5000)
-  }
 
   // Exercise 5.2 Blog List Frontend, step 2
   const handleLogout = () => {
@@ -108,17 +82,6 @@ const App = () => {
     }, 5000)
   }
 
-  const loginForm = () => (
-    <Togglable buttonLabel='login'>
-      <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={handleLogin}
-      />
-    </Togglable>
-  )
 
   const blogList = (user) => (
     <div className='blogList'>
@@ -136,7 +99,7 @@ const App = () => {
     </Togglable>
   )
 
-  if (user === null) {
+  /*if (user === null) {
     return (
       <div>
         <Notification message={message}/>
@@ -162,6 +125,47 @@ const App = () => {
       </div>
       {blogList(user)}
     </div>
+  )
+  */
+
+  // Exercise 5.24 Router blogs, step1
+  const padding = {
+    padding: 5
+  }
+
+  return (
+    <Router>
+        <Link style={padding} to='/'>blogs</Link>
+        {user === null && <Link style={padding} to='/login'>login</Link>}
+        {user !== null &&
+          <button onClick={handleLogout}>logout</button>
+        }
+      <Routes>
+        {user === null && <Route path='/login' element={<Login/>}/>}
+        {user !== null && <Route path='/' element={
+          <div>
+            <Notification message={message}/>
+            <h2>Blogs</h2>
+            <div>
+              <p>{user.username} logged in <button onClick={handleLogout}>
+                logout
+              </button></p>
+            </div>
+            <div>
+              {blogForm()}
+            </div>
+            {blogList(user)}
+          </div>
+        }/>}
+        {user === null && <Route path='/' element={
+          <div>
+            <Notification message={message}/>
+            <h2>Blogs</h2>
+            <p>Login to see, create and manage blogs</p>
+          </div>
+        }/>}
+      </Routes>
+    </Router>
   )
 }
 
