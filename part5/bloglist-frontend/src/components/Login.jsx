@@ -11,49 +11,21 @@ import Notification from './Notification'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 
-const Login = () => {
+const Login = ({ loginHandling, message }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
   
-  const blogFormRef = useRef() // Exercise 5.5 Blog List Frontend, step 5
   const navigate = useNavigate() // Exercise 5.24 Router blogs, step1
 
-  // Exercise 5.2 Blog List Frontend, step 2
-    useEffect(() => {
-      const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-      if (loggedUserJSON) {
-        const user = JSON.parse(loggedUserJSON)
-        setUser(user)
-        blogService.setToken(user.token)
-      }
-    }, [])
   
-    // Exercise 5.1 Blog List Frontend, step 1
-    const handleLogin = async (event) => {
-      event.preventDefault()
-      console.log('logging in with', username, password)
-      try {
-        const user = await loginService.login({ username, password })
-        // Exercise 5.2 Blog List Frontend, step 2
-        window.localStorage.setItem(
-          'loggedNoteappUser', JSON.stringify(user)
-        )
-        blogService.setToken(user.token)
-        setUser(user)
-        setUsername('')
-        setPassword('')
-        setMessage(`${user.username} logged in`)
-        navigate('/') // Exercise 5.24 Router blogs, step1
-      } catch {
-        setMessage('Wrong username or password')
-       
-      }
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    }
+  // Exercise 5.1 Blog List Frontend, step 1
+  const handleLogin = event => {
+    event.preventDefault()
+    loginHandling({ username: username, password: password })
+    navigate('/') // Exercise 5.24 Router blogs, step1
+    setUsername('')
+    setPassword('')
+  }
 
 
     return (

@@ -6,6 +6,8 @@ import {
 
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import BlogList from './components/BlogList'
+import Home from './components/Home'
 import Login from './components/Login'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
@@ -15,8 +17,6 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
   
@@ -27,6 +27,27 @@ const App = () => {
       setBlogs( blogs )
     )
   }, [])
+
+  const handleLogin = async (loginObject) => {
+    console.log('logging in with', loginObject.username, loginObject.password)
+    try {
+      const user = await loginService.login(loginObject)
+      // Exercise 5.2 Blog List Frontend, step 2
+      window.localStorage.setItem(
+        'loggedNoteappUser', JSON.stringify(user)
+      )
+      console.log('user', user)
+      blogService.setToken(user.token)
+      setUser(user)
+      setMessage(`${user.username} logged in`)
+    } catch {
+      setMessage('Wrong username or password')
+      
+    }
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
+  }
 
   // Exercise 5.2 Blog List Frontend, step 2
   const handleLogout = () => {
@@ -83,7 +104,7 @@ const App = () => {
   }
 
 
-  const blogList = (user) => (
+  /*const blogList = (user) => (
     <div className='blogList'>
       {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
         <Blog key={blog.id} blog={blog} updateLikes={addLike} deletedBlog={removeBlog} user={user}/>
@@ -96,8 +117,8 @@ const App = () => {
   const blogForm = () => (
     <Togglable buttonLabel='create new blog' ref={blogFormRef}>
       <BlogForm createBlog={addBlog}/>
-    </Togglable>
-  )
+    
+  */
 
   /*if (user === null) {
     return (
@@ -136,34 +157,37 @@ const App = () => {
   return (
     <Router>
         <Link style={padding} to='/'>blogs</Link>
-        {user === null && <Link style={padding} to='/login'>login</Link>}
+        {user === null && 
+          <Link style={padding} to='/login'>login</Link>
+        }
         {user !== null &&
           <button onClick={handleLogout}>logout</button>
         }
       <Routes>
-        {user === null && <Route path='/login' element={<Login/>}/>}
+        {user === null && 
+          <Route path='/login' element={
+          <Login 
+            loginHandling={handleLogin} 
+            message={message}
+          />
+          }/>
+        }
         {user !== null && <Route path='/' element={
-          <div>
-            <Notification message={message}/>
-            <h2>Blogs</h2>
-            <div>
-              <p>{user.username} logged in <button onClick={handleLogout}>
-                logout
-              </button></p>
-            </div>
-            <div>
-              {blogForm()}
-            </div>
-            {blogList(user)}
-          </div>
+          <BlogList
+            user={user}
+            blogs={blogs}
+            message={message}
+            handleLogout={handleLogout}
+            addBlog={addBlog}
+            addLike={addLike}
+            removeBlog={removeBlog}
+          />
         }/>}
-        {user === null && <Route path='/' element={
-          <div>
-            <Notification message={message}/>
-            <h2>Blogs</h2>
-            <p>Login to see, create and manage blogs</p>
-          </div>
-        }/>}
+        {user === null && 
+          <Route path='/' element={
+            <Home message={message}/>
+          }/>
+        }
       </Routes>
     </Router>
   )
