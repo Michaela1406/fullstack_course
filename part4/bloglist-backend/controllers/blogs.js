@@ -74,7 +74,8 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 
 // Exercise 4.14: Blog List Expansions, step 2
 blogsRouter.put('/:id', async (request, response) => {
-  const { title, author, url, likes } = request.body
+  const { title, author, url, likes} = request.body
+  const user = request.user
 
   const blogToUpdate = await Blog.findById(request.params.id)
   if (!blogToUpdate) {
@@ -85,6 +86,7 @@ blogsRouter.put('/:id', async (request, response) => {
   blogToUpdate.author = author
   blogToUpdate.url = url
   blogToUpdate.likes = likes
+  blogToUpdate.user = user // Ensure the user field remains unchanged
 
   const updatedBlog = await blogToUpdate.save()
   response.json(updatedBlog)

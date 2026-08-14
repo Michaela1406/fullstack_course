@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef} from 'react'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link, useMatch
 } from 'react-router-dom'
 
 import Blog from './components/Blog'
@@ -21,6 +21,11 @@ const App = () => {
   const [message, setMessage] = useState(null) // Exercise 5.4 Blog List Frontend, step 4
   
   const blogFormRef = useRef() // Exercise 5.5 Blog List Frontend, step 5
+
+  const match = useMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -155,7 +160,7 @@ const App = () => {
   }
 
   return (
-    <Router>
+    <div>
         <Link style={padding} to='/'>blogs</Link>
         {user === null && 
           <Link style={padding} to='/login'>login</Link>
@@ -166,10 +171,10 @@ const App = () => {
       <Routes>
         {user === null && 
           <Route path='/login' element={
-          <Login 
-            loginHandling={handleLogin} 
-            message={message}
-          />
+            <Login 
+              loginHandling={handleLogin} 
+              message={message}
+            />
           }/>
         }
         <Route path='/' element={
@@ -177,14 +182,19 @@ const App = () => {
             user={user}
             blogs={blogs}
             message={message}
-            handleLogout={handleLogout}
             addBlog={addBlog}
-            addLike={addLike}
-            removeBlog={removeBlog}
+          />
+        }/>
+        <Route path='/blogs/:id' element={
+          <Blog
+            blog={blog}
+            updateLikes={addLike}
+            deletedBlog={removeBlog}
+            user={user}
           />
         }/>
       </Routes>
-    </Router>
+    </div>
   )
 }
 
