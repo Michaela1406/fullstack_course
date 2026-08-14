@@ -32,11 +32,6 @@ const Blog = ({ blog, updateLikes, deletedBlog, user }) => {
       deletedBlog(blog, true)
     }
   }
-  console.log('blog: ', blog)
-  console.log('blog.user: ', blog.user)
-  console.log('blog.user.username: ', blog.user.username)
-  console.log('user: ', user)
-  console.log('user.username: ', user.username)
 
   return (
     <div style={blogStyle}>
@@ -47,7 +42,7 @@ const Blog = ({ blog, updateLikes, deletedBlog, user }) => {
           <p>url: {blog.url}</p>
           <p>likes: {blog.likes}<button onClick ={addLike}>like</button></p>
           <p>author: {blog.author}</p>
-          {blog.user && blog.user.username === user.username && (
+          {user && blog.user && blog.user.username === user.username && (
             <button onClick={deleteBlog}>remove</button>
           )}
         </div>

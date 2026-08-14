@@ -172,7 +172,7 @@ const App = () => {
           />
           }/>
         }
-        {user !== null && <Route path='/' element={
+        <Route path='/' element={
           <BlogList
             user={user}
             blogs={blogs}
@@ -182,15 +182,12 @@ const App = () => {
             addLike={addLike}
             removeBlog={removeBlog}
           />
-        }/>}
-        {user === null && 
-          <Route path='/' element={
-            <Home message={message}/>
-          }/>
-        }
+        }/>
       </Routes>
     </Router>
   )
 }
+
+/*{user === null && <Route path='/' element={<Home message={message}/>}/>} */
 
 export default App

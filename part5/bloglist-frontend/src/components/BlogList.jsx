@@ -29,16 +29,26 @@ const BlogList = ({user, blogs, message, handleLogout, addBlog, addLike, removeB
       <BlogForm createBlog={addBlog}/>
     </Togglable>
   )
+  console.log('user: ', user)
 
+  if (user === null) {
+    return (
+      <div>
+        <Notification message={message}/>
+        <h2>Blogs</h2>
+        {blogList(user)}
+      </div>
+    )
+  }
   return (
     <div>
       <Notification message={message}/>
       <h2>Blogs</h2>
+        <div>
+          <p>{user.username} logged in</p>
+        </div>
       <div>
-        <p>{user.username} logged in</p>
-      </div>
-      <div>
-        {blogForm()}
+       {blogForm()}
       </div>
       {blogList(user)}
     </div>
