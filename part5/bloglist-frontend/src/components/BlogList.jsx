@@ -9,10 +9,15 @@ import BlogForm from './BlogForm'
 import Togglable from './Togglable'
 import Notification from './Notification'
 
-const BlogList = ({user, blogs, message, addBlog}) => {
+const BlogList = ({user, blogs, message}) => {
 
-
-  const blogFormRef = useRef() // Exercise 5.5 Blog List Frontend, step 5
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      blogService.setToken(user.token)
+    }
+  }, [])
 
 
   const blogList = (user) => (
@@ -24,15 +29,6 @@ const BlogList = ({user, blogs, message, addBlog}) => {
       )}
     </div>
   )
-
-  // Exercise 5.5 Blog List Frontend, step 5
-
-  const blogForm = () => (
-    <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-      <BlogForm createBlog={addBlog}/>
-    </Togglable>
-  )
-  console.log('user: ', user)
 
   if (user === null) {
     return (
@@ -50,9 +46,6 @@ const BlogList = ({user, blogs, message, addBlog}) => {
         <div>
           <p>{user.username} logged in</p>
         </div>
-      <div>
-       {blogForm()}
-      </div>
       {blogList(user)}
     </div>
   )

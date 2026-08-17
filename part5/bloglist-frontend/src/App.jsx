@@ -39,9 +39,9 @@ const App = () => {
       const user = await loginService.login(loginObject)
       // Exercise 5.2 Blog List Frontend, step 2
       window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
+        'loggedBlogappUser', JSON.stringify(user)
       )
-      console.log('user', user)
+      //console.log('user', user)
       blogService.setToken(user.token)
       setUser(user)
       setMessage(`${user.username} logged in`)
@@ -62,7 +62,6 @@ const App = () => {
 
   // Exercise 5.3 Blog List Frontend, step 3
   const addBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
     try {
       const response = await blogService.create(blogObject)
       setBlogs(blogs.concat(response.data))
@@ -79,7 +78,7 @@ const App = () => {
   // Exercise 5.8 Blog List Frontend, step 8
   const addLike = async (blogObject) => {
     try {
-      const updatedBlog = await blogService.update(blogObject.id, {
+    const updatedBlog = await blogService.update(blogObject.id, {
         ...blogObject,
       })
       setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : updatedBlog))
@@ -115,17 +114,12 @@ const App = () => {
         <Blog key={blog.id} blog={blog} updateLikes={addLike} deletedBlog={removeBlog} user={user}/>
       )}
     </div>
-  )
+  )*/
 
   // Exercise 5.5 Blog List Frontend, step 5
-
-  const blogForm = () => (
-    <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-      <BlogForm createBlog={addBlog}/>
-    
-  */
-
-  /*if (user === null) {
+  
+  /*
+  if (user === null) {
     return (
       <div>
         <Notification message={message}/>
@@ -166,6 +160,9 @@ const App = () => {
           <Link style={padding} to='/login'>login</Link>
         }
         {user !== null &&
+          <Link style={padding} to='/createBlog'>create blog</Link>
+        }
+        {user !== null &&
           <button onClick={handleLogout}>logout</button>
         }
       <Routes>
@@ -177,12 +174,14 @@ const App = () => {
             />
           }/>
         }
+        <Route path='/createBlog' element={
+          <BlogForm createBlog={addBlog}/>
+        }/>
         <Route path='/' element={
           <BlogList
             user={user}
             blogs={blogs}
             message={message}
-            addBlog={addBlog}
           />
         }/>
         <Route path='/blogs/:id' element={

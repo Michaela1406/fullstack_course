@@ -2,6 +2,7 @@
 
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user') // Exercise 4.17 Blog List Expansions, step 5
 const middleware = require('../utils/middleware')
 const userExtractor = middleware.userExtractor
 // Exercise 4.17 Blog List Expansions, step 5
@@ -66,16 +67,21 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   if (blogToDelete.user.toString() !== user.id.toString()) {
     return response.status(403).json({ error: 'only the creator of the blog can delete it' })
   }
+  
   await Blog.findByIdAndDelete(request.params.id)
-  user.blogs = user.blogs.filter(b => b.id.toString() !== blogToDelete.id.toString())
+  user.blogs = user.blogs.filter(b => b.toString() !== blogToDelete.id.toString())
   await user.save()
+
   response.status(204).end()
 })
 
 // Exercise 4.14: Blog List Expansions, step 2
 blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes} = request.body
-  const user = request.user
+  const user = await User.findById(request.body.user.id)
+  if (!user) {
+    return response.status(400).json({ error: 'userId missing or not valid' })
+  }
 
   const blogToUpdate = await Blog.findById(request.params.id)
   if (!blogToUpdate) {
@@ -86,8 +92,8 @@ blogsRouter.put('/:id', async (request, response) => {
   blogToUpdate.author = author
   blogToUpdate.url = url
   blogToUpdate.likes = likes
-  blogToUpdate.user = user // Ensure the user field remains unchanged
-
+  blogToUpdate.user = user
+  
   const updatedBlog = await blogToUpdate.save()
   response.json(updatedBlog)
 })

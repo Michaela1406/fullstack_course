@@ -16,7 +16,6 @@ const Login = ({ loginHandling, message }) => {
   const [password, setPassword] = useState('')
   
   const navigate = useNavigate() // Exercise 5.24 Router blogs, step1
-
   
   // Exercise 5.1 Blog List Frontend, step 1
   const handleLogin = event => {
