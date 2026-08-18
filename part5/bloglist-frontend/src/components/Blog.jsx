@@ -57,11 +57,11 @@ const Blog = ({ blog, updateLikes, deletedBlog, user }) => {
           <h2>{blog.title} by {blog.author}</h2>
           <p><a href={blog.url} target="_blank">{blog.url}</a></p>
           <p>likes {blog.likes} {user && (
-            <button onClick ={addLike}>like</button>
+            <button data-testid="likeButton" onClick ={addLike}>like</button>
           )}</p>
           <p>Added by {blog.user ? blog.user.username : 'Unknown'}</p>
           {user && blog.user && user.username === blog.user.username && (
-            <button onClick={deleteBlog}>remove</button>
+            <button data-testid="deleteButton" onClick={deleteBlog}>remove</button>
           )}
         </div>
     </div>
