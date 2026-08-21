@@ -1,5 +1,6 @@
 // Exercise 5.5 Blog List Frontend, step 5
 import { useState, useImperativeHandle} from 'react'
+import { TextField, Button  } from '@mui/material'
 
 const Togglable = props => {
   const [visible, setVisible] = useState(false)
@@ -19,11 +20,11 @@ const Togglable = props => {
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+      <Button type="cancel" variant="outlined" style={{ marginTop: 10 }} onClick={toggleVisibility}>{props.buttonLabel}</Button>
       </div>
       <div style={showWhenVisible}>
         {props.children}
-        <button onClick={toggleVisibility}>cancel</button>
+        <Button type="cancel" variant="outlined" style={{ marginTop: 10 }} onClick={toggleVisibility}>cancel</Button>
       </div>
     </div>
   )

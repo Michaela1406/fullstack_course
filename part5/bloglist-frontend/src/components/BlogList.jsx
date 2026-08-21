@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useNavigate } from 'react'
 import { Link } from 'react-router-dom'
 
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+
 import blogService from '../services/blogs'
 
 import Blog from './Blog'
@@ -9,7 +11,7 @@ import BlogForm from './BlogForm'
 import Togglable from './Togglable'
 import Notification from './Notification'
 
-const BlogList = ({user, blogs, message}) => {
+const BlogList = ({user, blogs}) => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -21,19 +23,28 @@ const BlogList = ({user, blogs, message}) => {
 
 
   const blogList = (user) => (
-    <div className='blogList'>
-      {blogs.sort((a,b) => b.likes - a.likes).map(blog => // Exercise 5.10 Blog List Frontend, step 10
-        <li key={blog.id}>
-          <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link>
-        </li>
-      )}
+    <div>
+    <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+          </TableHead>
+          <TableBody>
+            {blogs.sort((a,b) => b.likes - a.likes).map(blog => (
+              <TableRow key={blog.id}>
+                <TableCell>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 
   if (user === null) {
     return (
       <div>
-        <Notification message={message}/>
         <h2>Blogs</h2>
         {blogList(user)}
       </div>
@@ -41,11 +52,7 @@ const BlogList = ({user, blogs, message}) => {
   }
   return (
     <div>
-      <Notification message={message}/>
       <h2>Blogs</h2>
-        <div>
-          <p>{user.username} logged in</p>
-        </div>
       {blogList(user)}
     </div>
   )

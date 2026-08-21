@@ -11,7 +11,7 @@ import Notification from './Notification'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 
-const Login = ({ loginHandling, message }) => {
+const Login = ({ loginHandling }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   
@@ -29,7 +29,6 @@ const Login = ({ loginHandling, message }) => {
 
     return (
         <div>
-        <Notification message={message}/>
         <h2>Log in to application</h2>
         <Togglable buttonLabel='login'>
             <LoginForm

@@ -4,6 +4,8 @@ import {
   Routes, Route, Link, useMatch
 } from 'react-router-dom'
 
+import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
+
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
@@ -44,9 +46,9 @@ const App = () => {
       //console.log('user', user)
       blogService.setToken(user.token)
       setUser(user)
-      setMessage(`${user.username} logged in`)
+      setMessage({text:`${user.username} logged in`, type: 'success'})
     } catch {
-      setMessage('Wrong username or password')
+      setMessage({text:'Wrong username or password', type: 'error'})
       
     }
     setTimeout(() => {
@@ -57,7 +59,11 @@ const App = () => {
   // Exercise 5.2 Blog List Frontend, step 2
   const handleLogout = () => {
     window.localStorage.removeItem('loggedNoteappUser')
+    setMessage({text: `Logged out ${user.username}`, type: 'info'})
     setUser(null)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   // Exercise 5.3 Blog List Frontend, step 3
@@ -65,10 +71,10 @@ const App = () => {
     try {
       const response = await blogService.create(blogObject)
       setBlogs(blogs.concat(response.data))
-      setMessage(`Added ${response.data.title} by ${response.data.author}`)
+      setMessage({text:`Added ${response.data.title} by ${response.data.author}`, type: 'success'})
     } catch {
       console.log('error creating a new blog')
-      setMessage('Error creating a new blog')
+      setMessage({text:'Error creating a new blog', type: 'error'})
     }
     setTimeout(() => {
       setMessage(null)
@@ -82,13 +88,14 @@ const App = () => {
         ...blogObject,
       })
       setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : updatedBlog))
+       setMessage({text:'Added like to the blog', type: 'success'})
     } catch {
       console.log('error updating the blog')
-      setMessage('Error updating the blog')
-      setTimeout(() => {
+      setMessage({text:'Error updating the blog', type: 'error'})
+    }
+    setTimeout(() => {
         setMessage(null)
       }, 5000)
-    }
   }
 
   // Exercise 5.11 Blog List Frontend, step 11
@@ -97,10 +104,10 @@ const App = () => {
     try {
       await blogService.remove(blogToDelete.id)
       setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id))
-      setMessage(`Deleted ${blogToDelete.title} by ${blogToDelete.author}`)
+      setMessage({text:`Deleted ${blogToDelete.title} by ${blogToDelete.author}`, type: 'success'})
     } catch {
       console.log('error deleting the blog')
-      setMessage('Error deleting the blog')
+      setMessage({text:'Error deleting the blog', type: 'error'})
     }
     setTimeout(() => {
       setMessage(null)
@@ -148,40 +155,45 @@ const App = () => {
   )
   */
 
-  // Exercise 5.24 Router blogs, step1
-  const padding = {
-    padding: 5
-  }
+  // Exercise 5.30
+  const hoverStyle = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
   return (
-    <div>
-        <Link style={padding} to='/'>blogs</Link>
-        {user === null && 
-          <Link style={padding} to='/login'>login</Link>
-        }
-        {user !== null &&
-          <Link style={padding} to='/createBlog'>create blog</Link>
-        }
-        {user !== null &&
-          <button onClick={handleLogout}>logout</button>
-        }
+    <Container>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button color="inherit" component={Link} to="/" sx={hoverStyle}>blogs</Button>
+          {user === null && <Button color="inherit" component={Link} to="/login" sx={hoverStyle}>login</Button>}
+          {user !== null && <Button color="inherit" component={Link} to="/createBlog" sx={hoverStyle}>create blog</Button>}
+          {user !== null && <Typography variant="subtitle2" component='div'>
+            {user.username} logged in
+          </Typography>}
+          {user !== null && <Button color="inherit" sx={hoverStyle} onClick={handleLogout}>logout </Button>}
+        </Toolbar>
+      </AppBar>
+
+      <Notification message={message}/>
+
       <Routes>
         {user === null && 
           <Route path='/login' element={
-            <Login 
+            <Login
               loginHandling={handleLogin} 
-              message={message}
             />
           }/>
         }
         <Route path='/createBlog' element={
-          <BlogForm createBlog={addBlog}/>
+          <BlogForm 
+            createBlog={addBlog}
+            />
         }/>
         <Route path='/' element={
           <BlogList
             user={user}
             blogs={blogs}
-            message={message}
           />
         }/>
         <Route path='/blogs/:id' element={
@@ -193,7 +205,7 @@ const App = () => {
           />
         }/>
       </Routes>
-    </div>
+    </Container>
   )
 }
 

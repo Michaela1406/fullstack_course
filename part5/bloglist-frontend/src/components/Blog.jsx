@@ -2,7 +2,11 @@ import { useState, useEffect} from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 
-const Blog = ({ blog, updateLikes, deletedBlog, user }) => {
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography } from '@mui/material'
+
+import Notification from './Notification'
+
+const Blog = ({ blog, updateLikes, deletedBlog, user}) => {
   // Exercise 7.7 Blog List Frontend, step 7
   //const [visible, setVisible] = useState(false)
 
@@ -52,20 +56,46 @@ const Blog = ({ blog, updateLikes, deletedBlog, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
-        <div className='blogAllDetails'>
-          <h2>{blog.title} by {blog.author}</h2>
-          <p><a href={blog.url} target="_blank">{blog.url}</a></p>
-          <p>likes {blog.likes} {user && (
-            <button data-testid="likeButton" onClick ={addLike}>like</button>
-          )}</p>
-          <p>Added by {blog.user ? blog.user.username : 'Unknown'}</p>
-          {user && blog.user && user.username === blog.user.username && (
-            <button data-testid="deleteButton" onClick={deleteBlog}>remove</button>
-          )}
-        </div>
+    <div>
+      <br/>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+              <TableRow key={blog.id}>
+                <TableCell>
+                  <Typography variant='h5'>{blog.title}</Typography>
+                  <p> by {blog.author}</p>
+                  <p><a href={blog.url} target="_blank">{blog.url}</a></p>
+                  <p>Added by {blog.user ? blog.user.username : 'Unknown'}</p>
+                  <p>{blog.likes} likes {user && (
+                    <Button size='small' variant="outlined" style={{ marginTop: 2, marginLeft: 5, marginBottom: 2}} data-testid="likeButton" onClick ={addLike}>like</Button>
+                  )}</p>
+                  {user && blog.user && user.username === blog.user.username && (
+                    <Button size='small' variant="outlined" color='error' style={{ marginTop: 2, marginLeft: 5, marginBottom: 2}} data-testid="deleteButton" onClick={deleteBlog}>remove</Button>
+                  )}
+                </TableCell>
+              </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }
 
 export default Blog
+
+/*
+<div style={blogStyle}>
+          <div className='blogAllDetails'>
+            <h2>{blog.title} by {blog.author}</h2>
+            <p><a href={blog.url} target="_blank">{blog.url}</a></p>
+            <p>likes {blog.likes} {user && (
+              <button data-testid="likeButton" onClick ={addLike}>like</button>
+            )}</p>
+            <p>Added by {blog.user ? blog.user.username : 'Unknown'}</p>
+            {user && blog.user && user.username === blog.user.username && (
+              <button data-testid="deleteButton" onClick={deleteBlog}>remove</button>
+            )}
+          </div>
+      </div>
+*/
